@@ -1,0 +1,1 @@
+This repo contains several script files from various languages as a part of a college course. Things are subject to change!
