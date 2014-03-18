@@ -1,6 +1,6 @@
 #!/bin/bash
-# Üllar Seerme, A21
-# Skript kontrollib, mis versioon pakist on paigaldatud. Juhul, kui paigaldatud ei ole, siis tagastab "Installed: (none)".
+# Üllar Seerme
+# Script checks which version of a package is installed and only displays the bare essentials. If the package isn't installed, then it returns "Installed: (None)".
 export LC_ALL=C
 
 ARG=$1
