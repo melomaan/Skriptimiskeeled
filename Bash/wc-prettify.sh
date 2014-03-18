@@ -1,13 +1,13 @@
 #!/bin/bash
-# Üllar Seerme, A21
-# Skript tagastab wc utiliidi väljundi viisakamas vormis.
+# Üllar Seerme
+# Script returns the output of the wc command in a more readable format.
 export LC_ALL=C
 
-echo -n "Sisesta faili asukoht, mille kohta soovid infot: "
+echo -n "Enter the location of the file you wish to know more about: "
 read LOC
 
 DO=$(wc "$LOC")
-array=( Ridu Sõnu Tähemärke Lõplik\ asukoht )
+array=( Lines Words Characters Final\ location )
 j=0
 
 for i in $DO; do
