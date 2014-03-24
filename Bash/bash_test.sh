@@ -1,6 +1,9 @@
 #!/bin/bash
 # Üllar Seerme
-# Script takes an input as "rand,fname,lname,rand,rand" (where "rand" is a random number of arbitrary length), searches for a user in getent passwd with fname and lname, and returns an output as "username, fname lname,," into a text file.
+# Script takes an input as "rand,fname,lname,rand,rand" 
+# (where "rand" is a random number of arbitrary length), 
+# searches for a user in getent passwd with fname and lname, 
+# and returns an output as "username, fname lname,," into a text file.
 export LC_ALL=C
 
 VAR=$1
