@@ -5,17 +5,21 @@ import chilkat
 
 
 class Uploader():
+    # Define variables for the various HTTP classes
     http = chilkat.CkHttp()
     req = chilkat.CkHttpRequest()
     req.UseUpload()
 
     def __init__(self):
-        # Default upload URL of the main domain
+        # Default upload URL of the main domain to be used
         self.req.put_Path("/upload")
         self.domain = ""
         loc = input("Enter the location of what you want to upload: ")
-
+        # First argument of the AddFileForUpload method is an arbitrary name,
+        # which in HTML is the form field name of the input tag. Method
+        # returns a boolean
         add = self.req.AddFileForUpload("file1", loc)
+
         if add is not True:
             print(self.req.lastErrorText())
             sys.exit()
@@ -29,6 +33,7 @@ class Uploader():
         # it is commercially licensed. This should be called once at the
         # beginning of the program
         unlock = self.http.UnlockComponent("Unlock")
+
         if unlock is not True:
             print(self.http.lastErrorText())
             sys.exit()
@@ -48,13 +53,17 @@ class Uploader():
         port = 80
         ssl = False
         resp = self.http.SynchronousRequest(self.domain, port, ssl, self.req)
+
+        # If there is no response, then show the error text
         if resp is None:
             print(self.http.lastErrorText())
         else:
-            resp.put_Utf8(True)
+            # Use regex to find the upload domain plus the locator for the file
+            # in the body
             matcher = re.search(self.domain + "/v/.*html", resp.bodyStr())
             if matcher:
-                print(repr(matcher.group(0)))
+                # Return the entire match
+                print("Link:", matcher.group(0))
             else:
                 print("No match was found in the body of the source.")
 
