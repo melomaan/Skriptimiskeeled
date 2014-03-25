@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 """Script for performing synchronous uploads to one of many
 ZippyShare.com upload domains. Takes user's input for file
 location (absolute path) and returns the download link.
+
+Author: Üllar Seerme
 """
 
 import sys
