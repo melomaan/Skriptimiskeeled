@@ -2,9 +2,8 @@
 """Script for performing synchronous uploads to one of many
 ZippyShare.com upload domains. Takes user's input for file
 location (absolute path) and returns the download link.
-
-Author: Üllar Seerme
 """
+__author__ = 'Üllar Seerme'
 
 import sys
 import random
@@ -34,7 +33,6 @@ class Uploader():
 
         self.unlock_chilkat()
         self.rand_domain()
-        self.upload()
 
     def unlock_chilkat(self):
         """Call once at the beginning to unlock the commercially licensed
@@ -71,13 +69,15 @@ class Uploader():
         else:
             matcher = re.search(self.domain + "/v/.*html", resp.bodyStr())
             if matcher:
-                print("Link:", matcher.group(0))
+                return matcher.group(0)
             else:
                 print("No match was found in the body of the source.")
 
 
 def main():
-    Uploader()
+    bar = Uploader()
+    foo = bar.upload()
+    print(foo)
 
 if __name__ == "__main__":
     main()
