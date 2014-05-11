@@ -26,7 +26,8 @@ function check_apache {
     fi
 }
 
-# Function checks if there is an address with the same name in the /etc/hosts file and if there isn't, then it gets added with the localhost address
+# Function checks if there is an address with the same name in the /etc/hosts file 
+# and if there isn't, then it gets added with the localhost address
 function check_name {
     grep -E "^127.0.0.1 $ARG" /etc/hosts 2> /dev/null
 
@@ -38,7 +39,8 @@ function check_name {
     fi
 }
 
-# Function checks if there is a folder by the same name in the /var/www folder and if there isn't, then it gets created
+# Function checks if there is a folder by the same name in the /var/www folder 
+# and if there isn't, then it gets created
 function check_dir {
     ls /var/www/"$ARG" 2> /dev/null
 
@@ -50,7 +52,9 @@ function check_dir {
     fi
 }
 
-# Functions copies the default index.html folder and changes its header. Changes are made in the configuration files where ServerAdmin, ServerName, DocumentRoot, ErrorLog and CustomLog are changed from the default settings
+# Functions copies the default index.html folder and changes its header. 
+# Changes are made in the configuration files where ServerAdmin, ServerName, 
+# DocumentRoot, ErrorLog and CustomLog are changed from the default settings
 function copy_reqs {
     find /var/www/$ARG 2> /dev/null
     sed "s/It works!/$ARG/" /var/www/index.html > /var/www/$ARG/index.html
