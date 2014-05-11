@@ -1,6 +1,8 @@
 #!/bin/bash
 # Üllar Seerme
-# Script creates a new file server and shares the folder to a group under a certain share name. The folder, group name and share name are supplied by passing them as arguments.
+# Script creates a new file server and shares the folder to a group 
+# under a certain share name. The folder, group name and share name 
+# are supplied by passing them as arguments.
 export LC_ALL=C
 FOLDER=$1
 GROUP=$2
@@ -60,7 +62,8 @@ function check_share {
     grep -E "^\[$SHARE]$" /etc/samba/smb.conf
 }
 
-# If the last action was a success then a copy is created from the original .conf file and all changes are written to that file
+# If the last action was a success then a copy is created from the original .conf file and all 
+# changes are written to that file
 function create_share {
     if [ $? != 0 ]; then
         cp /etc/samba/smb.conf /etc/samba/smb_copy.conf
@@ -77,7 +80,8 @@ function create_share {
     fi
 }
 
-# Function checks the integrity of the copied configuration file and if no errors occurred, then the changes are written to the original configuration file and smbd services are reloaded
+# Function checks the integrity of the copied configuration file and if no errors occurred, 
+# then the changes are written to the original configuration file and smbd services are reloaded
 function test_reload {
     testparm -s  /etc/samba/smb_copy.conf > /dev/null
     if [ $? == 0 ]; then
