@@ -7,12 +7,12 @@ expression.
 https://github.com/mitsuhiko/markupsafe/blob/master/markupsafe/__init__.py
 """
 __author__ = 'Üllar Seerme'
+
 from urllib.parse import urlsplit
 import urllib.request
 import re
 
 site = input("Enter a site to scrape for unique words: ")
-# Give the files to be saved more descriptive names
 loc = urlsplit(site)
 loc = loc.hostname.replace(".", "_")
 response = urllib.request.urlopen(site)
