@@ -1,11 +1,8 @@
-﻿param($user)
-$processes = Get-Process -IncludeUserName | ? { $_.UserName -eq $user } | Format-Table -AutoSize Id, UserName, ProcessName
-
-if ($processes.length -eq 0) {
-    Write-Host "No such user. Defaulting to current user."
-    $user = "$env:USERDOMAIN\$env:USERNAME"
-    # Doesn't yet show process list of current user
-    Write-Host $user
-} else {
-    $processes
-}
+﻿/*
+ * Script takes a domain name and user name as a single argument, and
+ * returns the list of processes belonging to that certain set. If none
+ * is given, then current user is used.
+ */
+param($user = "$env:USERDOMAIN\$env:USERNAME")
+Get-Process -IncludeUserName | ? { $_.UserName -eq $user } | Format-Table
+-AutoSize Id, UserName, ProcessName
