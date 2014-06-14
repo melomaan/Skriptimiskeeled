@@ -1,8 +1,8 @@
-/* 
- * Script loops indefinitely asking about purchasing an elephant
- * without any regard to what the user inputs. This was our first
- * attempt at using PowerShell.
- */
+<#
+    Script loops indefinitely asking about purchasing an elephant
+    without any regard to what the user inputs. This was our first
+    attempt at using PowerShell.
+#>
 
 $foo = "Wanna buy an elephant?"
 $bar = "(Yes/No)"
