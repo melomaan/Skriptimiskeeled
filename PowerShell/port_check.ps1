@@ -1,7 +1,8 @@
-﻿<#
+<#
     Script either checks all common ports on an address or
     just the specified one.
 #>
+
 $ans = Read-Host "Do you want to scan a specific port? (Y/N)"
 $ports = @(21, 22, 23, 25, 53, 80, 110, 115, 135, 139, 143, 
 194, 443, 445, 1433, 3306, 3389, 5632, 5900)
