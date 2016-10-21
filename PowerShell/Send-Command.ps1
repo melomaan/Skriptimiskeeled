@@ -60,6 +60,7 @@ Function Send-Command {
 		Modified: 21-10-2016
 		Version: 1.0.6
 #>
+
 	[CmdletBinding()]
 	Param (
 		[Parameter(ValueFromPipeline=$True)]
