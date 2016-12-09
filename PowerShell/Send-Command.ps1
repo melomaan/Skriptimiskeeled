@@ -57,8 +57,8 @@ Function Send-Command {
 		Name: Send-Command.ps1
 		Author: Üllar Seerme
 		Created: 01-07-2016
-		Modified: 21-10-2016
-		Version: 1.0.6
+		Modified: 09-12-2016
+		Version: 1.1.0
 #>
 	[CmdletBinding()]
 	Param (
@@ -93,8 +93,9 @@ Function Send-Command {
 				Write-Verbose "Obtaining all '$Type' hostnames from '$ComputerName'"
 				Switch -Wildcard ($Type.ToLower()) {
 					"hv"        { $VMHosts = Get-SCVMHost -VMMServer $VMMServer }
-					"vm"        { $VMHosts = Get-VM -VMMServer $VMMServer }
-					"win*"      { $VMHosts = Get-VM -VMMServer $VMMServer | Where-Object {$_.OperatingSystem.IsWindows} }
+					"vm"        { $VMHosts = Get-SCVirtualMachine -VMMServer $VMMServer }
+					"win*"      { $VMHosts = Get-SCVirtualMachine -VMMServer $VMMServer | Where-Object { $_.OperatingSystem.IsWindows } }
+					"*n[ui]x"	{ $VMHosts = Get-SCVirtualMachine -VMMServer $VMMServer | Where-Object { !$_.OperatingSystem.IsWindows } }
 				}
 			} Else {
 				Write-Verbose "Obtaining all hostnames from '$Cluster' listed in '$ComputerName'"
@@ -157,7 +158,7 @@ Function Send-Command {
 				# Param(
 				#     $FilePassword
 				# )
-				Get-Content "C:\Windows\Temp\test.txt" # -Credential $FilePassword
+				hostname # -Credential $FilePassword
 			}
 
 			Invoke-Command -Session $Session -ScriptBlock $Script # -ArgumentList $Password
@@ -182,8 +183,12 @@ Function Send-Command {
 			Write-Host "Could not reach $FailCount hosts"
 			Write-Host "Failed hosts:"
 			ForEach ($Server In $FailArray) {
-				Write-Output $Server | Select Name, VMHostGroup
-			}
-		}
+				If (!$PSBoundParameters.ContainsKey('Path')) {
+					Write-Output $Server | Select Name, VMHostGroup
+				} Else {
+					Write-Output $Server
+				}
+			} # End of ForEach
+		} # End $FailCount
 	} # End of End-section
 } # End of Send-Command function
