@@ -92,10 +92,10 @@ Function Send-Command {
 
 				Write-Verbose "Obtaining all '$Type' hostnames from '$ComputerName'"
 				Switch -Wildcard ($Type.ToLower()) {
-					"hv"        { $VMHosts = Get-SCVMHost -VMMServer $VMMServer }
-					"vm"        { $VMHosts = Get-SCVirtualMachine -VMMServer $VMMServer }
-					"win*"      { $VMHosts = Get-SCVirtualMachine -VMMServer $VMMServer | Where-Object { $_.OperatingSystem.IsWindows } }
-					"*n[ui]x"	{ $VMHosts = Get-SCVirtualMachine -VMMServer $VMMServer | Where-Object { !$_.OperatingSystem.IsWindows } }
+					"hv"      { $VMHosts = Get-SCVMHost -VMMServer $VMMServer }
+					"vm"      { $VMHosts = Get-SCVirtualMachine -VMMServer $VMMServer }
+					"win*"    { $VMHosts = Get-SCVirtualMachine -VMMServer $VMMServer | Where-Object { $_.OperatingSystem.IsWindows } }
+					"*n[ui]x" { $VMHosts = Get-SCVirtualMachine -VMMServer $VMMServer | Where-Object { !$_.OperatingSystem.IsWindows } }
 				}
 			} Else {
 				Write-Verbose "Obtaining all hostnames from '$Cluster' listed in '$ComputerName'"
