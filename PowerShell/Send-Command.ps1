@@ -57,8 +57,8 @@ Function Send-Command {
 		Name: Send-Command.ps1
 		Author: Üllar Seerme
 		Created: 01-07-2016
-		Modified: 09-12-2016
-		Version: 1.1.0
+		Modified: 17-02-2017
+		Version: 1.1.1
 #>
 	[CmdletBinding()]
 	Param (
@@ -124,7 +124,6 @@ Function Send-Command {
 
 		Write-Verbose "Creating counter variables"
 		$OKCount = 0
-		$FailCount = 0
 		$FailArray = @()
 		$TotalCount = $VMHosts.Count
 		$Count = 0
@@ -165,7 +164,6 @@ Function Send-Command {
 
 			If (!$?) {
 				Write-Verbose "Failed with $Server. Updating statistics"
-				$FailCount += 1
 				$FailArray += $Server
 			} Else {
 				$OKCount += 1
@@ -179,8 +177,8 @@ Function Send-Command {
 	End {
 		Write-Verbose "Finished script with $OKCount / $TotalCount hosts"
 		
-		If ($FailCount -Ne 0) {
-			Write-Host "Could not reach $FailCount hosts"
+		If ($($FailArray.Length) -Ne 0) {
+			Write-Host "Could not reach $($FailArray.Length) hosts"
 			Write-Host "Failed hosts:"
 			ForEach ($Server In $FailArray) {
 				If (!$PSBoundParameters.ContainsKey('Path')) {
@@ -189,6 +187,6 @@ Function Send-Command {
 					Write-Output $Server
 				}
 			} # End of ForEach
-		} # End $FailCount
+		} # End $($FailArray.Length)
 	} # End of End-section
 } # End of Send-Command function
