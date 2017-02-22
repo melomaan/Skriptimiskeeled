@@ -40,8 +40,8 @@ Function Get-WinEventBetween {
         Name: Get-WinEventBetween.ps1
         Author: Üllar Seerme
         Created: 16-11-2016
-        Modified: 21-02-2017
-        Version: 1.0.0
+        Modified: 22-02-2017
+        Version: 1.0.1
 #>
 
     # Requires -RunAsAdministrator
@@ -56,12 +56,29 @@ Function Get-WinEventBetween {
         [Alias("End")]
         [String]$EndTime,
         [ValidateSet(0, 1, 2, 3, 4, 5)]
-        [Int32]$Level = 4
+        [Int32]$Level = 4,
+        [Int32]$DaysAfter
     )
 
     # Get all log names (*) from $ComputerName, where logs with 0 records are excluded
     $Logs = (Get-WinEvent -ListLog * -ComputerName $ComputerName | 
         Where-Object { $_.RecordCount -Ne 0 } ).LogName
+	
+	# Need to figure out logic relating to DaysAfter/DaysBefore and StartTime/EndTime
+    If ($PSBoundParameters.ContainsKey('DaysAfter')) {
+        If ($PSBoundParameters.ContainsKey('StartTime')) {
+            [DateTime]$StartTime = Get-Date $StartTime
+
+            If ($StartTime.AddDays($DaysAfter) -Ge (Get-Date)) {
+                Write-Verbose "You've set the end time into the future..."
+                Write-Verbose "Please set a more reasonable number of days"
+                Break
+            } Else {
+                [DateTime]$EndTime = $StartTime.AddDays($DaysAhead)
+                Write-Host $EndTime
+            }
+        }
+    }
 
     <#
         Found no option to have a default "show all" level type for logs, so opted
