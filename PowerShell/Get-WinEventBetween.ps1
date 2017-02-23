@@ -8,8 +8,6 @@ Function Get-WinEventBetween {
         to specify a period in-between which to query for events by defining start and end
         dates and times (optional)
 
-        TBD: A parameter with which to define the number of days to go back from -StartTime
-
     .EXAMPLE
         All events during a single day that were logged as "Warning"
         Get-WinEventBetween -StartTime "21.02.2017" -EndTime "21.02.2017" -Level 2 -Verbose
@@ -18,14 +16,18 @@ Function Get-WinEventBetween {
         FQDN of the computer you are trying to query. This defaults to "localhost"
 
     .PARAMETER StartTime
-        A starting point for the query in the format "DD.MM.YYYY [HH:MM:SS]", where
+        A starting point for the query in the format "dd.MM.yyyy [HH:mm.ss]", where
         the time part is optional. This defaults to the current day and the latest event
         from the current time
 
     .PARAMETER EndTime
-        An endpoint for the query in the format "DD.MM.YYYY [HH:MM:SS]", where
+        An endpoint for the query in the format "dd.MM.yyyy [HH:mm.ss]", where
         the time part is optional. Without defining this the function queries for the
         oldest log entry it can find
+
+    .PARAMETER Days
+        The number of days to either go back or forward depending on whether $StartTime or
+        $EndTime was defined
 
     .PARAMETER Level
         Defines the severity level of an event. They are defined within Windows as follows:
@@ -38,15 +40,15 @@ Function Get-WinEventBetween {
 
     .NOTES
         Name: Get-WinEventBetween.ps1
-        Author: Üllar Seerme
+        Author: Ãœllar Seerme
         Created: 16-11-2016
-        Modified: 22-02-2017
-        Version: 1.0.1
+        Modified: 23-02-2017
+        Version: 1.0.2
 #>
 
     # Requires -RunAsAdministrator
 
-	Param(
+    Param(
         [ValidateScript({ Test-Connection -ComputerName $_ -Quiet -Count 1})]
         [Parameter(ValueFromPipeline=$True, Position=0)]
         [Alias("CimSession", "Name", "Server")]
@@ -57,47 +59,57 @@ Function Get-WinEventBetween {
         [String]$EndTime,
         [ValidateSet(0, 1, 2, 3, 4, 5)]
         [Int32]$Level = 4,
-        [Int32]$DaysAfter
+        [Int32]$Days
     )
 
     # Get all log names (*) from $ComputerName, where logs with 0 records are excluded
     $Logs = (Get-WinEvent -ListLog * -ComputerName $ComputerName | 
         Where-Object { $_.RecordCount -Ne 0 } ).LogName
-	
-	# Need to figure out logic relating to DaysAfter/DaysBefore and StartTime/EndTime
-    If ($PSBoundParameters.ContainsKey('DaysAfter')) {
-        If ($PSBoundParameters.ContainsKey('StartTime')) {
-            [DateTime]$StartTime = Get-Date $StartTime
+    
+    If ($PSBoundParameters.ContainsKey('StartTime')) {
+        If ($PSBoundParameters.ContainsKey('Days')) {
 
-            If ($StartTime.AddDays($DaysAfter) -Ge (Get-Date)) {
-                Write-Verbose "You've set the end time into the future..."
-                Write-Verbose "Please set a more reasonable number of days"
-                Break
+            [DateTime]$StartTime = Get-Date $StartTime
+            If ($StartTime.AddDays($Days) -Le (Get-Date)) {
+                $EndTime = ($StartTime.AddDays($Days)).ToString("dd.MM.yyyy")
+                [String]$StartTime = $StartTime.ToString("dd.MM.yyyy")
             } Else {
-                [DateTime]$EndTime = $StartTime.AddDays($DaysAhead)
-                Write-Host $EndTime
+                Write-Host "You've added too many days; the end point is now in the future"
+                Write-Host "Please set a more reasonable number of days"
+                Break
             }
         }
     }
 
-    <#
-        Found no option to have a default "show all" level type for logs, so opted
-        for an If-block-based hashtable creation
-    #>
-    If ($PSBoundParameters.ContainsKey('Level')) {
-        $FilterTable = @{
-            "LogName"   = $Logs
-            "StartTime" = $StartTime
-            "EndTime"   = $EndTime
-            "Level"     = $Level
-        }
-    } Else {
-        $FilterTable = @{
-            "LogName"   = $Logs
-            "StartTime" = $StartTime
-            "EndTime"   = $EndTime
+    If ($PSBoundParameters.ContainsKey('EndTime')) {
+        If ($PSBoundParameters.ContainsKey('Days')) {
+
+            [DateTime]$EndTime = Get-Date $EndTime
+            If ($EndTime -Le (Get-Date)) {
+                $StartTime = ($EndTime.AddDays(-$Days)).ToString("dd.MM.yyyy")
+                [String]$EndTime = $EndTime.ToString("dd.MM.yyyy")
+            } Else {
+                Write-Verbose "You've set the end time into the future..."
+                Write-Verbose "Please set a more appropriate date for `$EndTime"
+                Break
+            }
         }
     }
+
+    Write-Host "Start: $StartTime"
+    Write-Host $StartTime.GetType()
+
+    Write-Host "End: $EndTime"
+    Write-Host $EndTime.GetType()
+
+    $FilterTable = @{
+        "LogName"   = $Logs
+        "StartTime" = $StartTime
+        "EndTime"   = $EndTime
+        "Level"     = $Level
+    }
+
+    $FilterTable.GetEnumerator()
 
     Get-WinEvent -ComputerName $ComputerName -FilterHashtable $FilterTable `
         -ErrorAction SilentlyContinue -ErrorVariable +Errors
