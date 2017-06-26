@@ -57,8 +57,8 @@ Function Send-Command {
 		Name: Send-Command.ps1
 		Author: Üllar Seerme
 		Created: 01-07-2016
-		Modified: 17-02-2017
-		Version: 1.1.1
+		Modified: 26-02-2017
+		Version: 1.1.2
 #>
 	[CmdletBinding()]
 	Param (
@@ -143,24 +143,22 @@ Function Send-Command {
 	} # End of Begin-section
 
 	Process {
-		# Write-Verbose "Setting optional variable to be used inside each session`n"
-		# $Password = Read-Host "Enter password" -AsSecureString
+		Write-Verbose "Setting optional variable to be used inside each invoked command`n"
+		$Password = Read-Host "Enter password" -AsSecureString
 
 		ForEach ($Server in $VMHosts) {
 			$Count += 1
 			Write-Verbose "($Count / $TotalCount) Processing $Server"
 
-			$Session = New-PSSession -ComputerName $Server -Credential $Creds -Authentication Credssp
-
 			Write-Verbose "Running custom command(s)"
 			$Script = {
-				# Param(
-				#     $FilePassword
-				# )
-				hostname # -Credential $FilePassword
+				Param(
+					$FilePassword
+				)
+				Add-Content file.txt "$FilePassword"
 			}
 
-			Invoke-Command -Session $Session -ScriptBlock $Script # -ArgumentList $Password
+			Invoke-Command -ComputerName $Server -ArgumentList $Password -ScriptBlock $Script -Credential $Creds -Authentication Credssp
 
 			If (!$?) {
 				Write-Verbose "Failed with $Server. Updating statistics"
@@ -169,7 +167,6 @@ Function Send-Command {
 				$OKCount += 1
 			}
 
-			Remove-PSSession $Server
 			Write-Verbose "Finished with $Server `n"
 		}
 	} # End of Process-section
