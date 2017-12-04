@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+'''Generate random unsigned 16-, 32-, or 64-bit integers
+according to defined file size.
+
+Usage:
+    python random_numbers.py -b 16 -n 16 -u MB -o out.dat
+'''
+
+import argparse
+
+parser = argparse.ArgumentParser(description='Generate random numbers to file')
+parser.add_argument('-b', '--bitness', type=int, default=16, 
+                    choices=[16, 32, 64], 
+                    help='Bitness value (default: %(default)s)')
+parser.add_argument('-n', '--numerical-value', dest='num', default='64',
+                    type=int, 
+                    help='Numerical value for the output file (default: %(default)s)')
+parser.add_argument('-u', '--unit', default='KB', 
+                    help='Size unit for the output file (default: %(default)s)')
+parser.add_argument('-o', '--output', required=True, 
+                    help='Location of the output file')
+args = parser.parse_args()
+
+
+def parse_size(num, unit):
+    '''Parse given size to determine number of bytes.
+
+    Args:
+        num: A numerical value representing size.
+        unit: A two-letter string being either KB, MB or GB.
+
+    Returns:
+        A number of bytes.
+
+    Raises:
+        ValueError: If 'unit' isn't either 'KB', 'MB' or 'GB'.
+    '''
+    unit = unit.upper()
+    if unit not in ['KB', 'MB', 'GB']:
+        raise ValueError('Cannot use {} as a size unit for parsing'.format(unit))
+
+    if unit == 'KB':
+        val = num * 1024
+    elif unit == 'MB':
+        val = num * (1024**2)
+    elif unit == 'GB':
+        val = num * (1024**3)
+
+    return val
+
+
+def main():
+    parse_size(args.num, args.unit)
+
+
+if __name__ == '__main__':
+    main()
