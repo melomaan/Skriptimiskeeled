@@ -15,6 +15,7 @@ To-Do:
 
 import argparse
 import os
+import sys
 from random import randrange
 
 parser = argparse.ArgumentParser(description='Generate random numbers to file')
@@ -63,11 +64,13 @@ def fill_file(file, size):
         file: Path to output file, which will be created if missing.
         size: Desired file size in bytes.
     '''
+    nrs = []
+
+    while sys.getsizeof(nrs) <= size:
+        nrs.append(randrange(2**args.bitness))
+
     f = open(file, 'w')
-
-    while os.stat(file).st_size < size:
-        f.write(str(randrange(2**args.bitness)) + '\n')
-
+    f.write('\n'.join(map(str, nrs)))
     f.close()
 
 
