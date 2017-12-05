@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
-'''Generate random unsigned 16-, 32-, or 64-bit integers
-according to defined file size.
+'''Generate random unsigned 16-, 32- or 64-bit integers
+that will be written to a file of desired size.
 
 Usage:
     python random_numbers.py -b 16 -n 16 -u MB -o out.dat
+
+To-Do:
+    - Make 'fill_file' function more efficient by reducing write
+    calls and creating individual batches that can be written to
+    the file instead, or find a way to create a data structure
+    with a given size (that should be split up into batches once
+    there is no more reasonable amount of memory).
 '''
 
 import argparse
+import os
+from random import randrange
 
 parser = argparse.ArgumentParser(description='Generate random numbers to file')
 parser.add_argument('-b', '--bitness', type=int, default=16, 
@@ -14,7 +23,7 @@ parser.add_argument('-b', '--bitness', type=int, default=16,
                     help='Bitness value (default: %(default)s)')
 parser.add_argument('-n', '--numerical-value', dest='num', default='64',
                     type=int, 
-                    help='Numerical value for the output file (default: %(default)s)')
+                    help="Numerical value for the output file's size (default: %(default)s)")
 parser.add_argument('-u', '--unit', default='KB', 
                     help='Size unit for the output file (default: %(default)s)')
 parser.add_argument('-o', '--output', required=True, 
@@ -22,11 +31,11 @@ parser.add_argument('-o', '--output', required=True,
 args = parser.parse_args()
 
 
-def parse_size(num, unit):
-    '''Parse given size to determine number of bytes.
+def parse_size(value, unit):
+    '''Parse given size and units to determine corresponding number of bytes.
 
     Args:
-        num: A numerical value representing size.
+        value: A numerical value representing size.
         unit: A two-letter string being either KB, MB or GB.
 
     Returns:
@@ -40,17 +49,31 @@ def parse_size(num, unit):
         raise ValueError('Cannot use {} as a size unit for parsing'.format(unit))
 
     if unit == 'KB':
-        val = num * 1024
+        return value * 1024
     elif unit == 'MB':
-        val = num * (1024**2)
+        return value * (1024**2)
     elif unit == 'GB':
-        val = num * (1024**3)
+        return value * (1024**3)
 
-    return val
+
+def fill_file(file, size):
+    '''Fill file with random numbers to stated size.
+
+    Args:
+        file: Path to output file, which will be created if missing.
+        size: Desired file size in bytes.
+    '''
+    f = open(file, 'w')
+
+    while os.stat(file).st_size < size:
+        f.write(str(randrange(2**args.bitness)) + '\n')
+
+    f.close()
 
 
 def main():
-    parse_size(args.num, args.unit)
+    val = parse_size(args.num, args.unit)
+    fill_file(args.output, val)
 
 
 if __name__ == '__main__':
