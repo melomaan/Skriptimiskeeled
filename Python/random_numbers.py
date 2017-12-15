@@ -8,29 +8,11 @@ Usage:
 To-Do:
     - Make 'fill_file' function more efficient by reducing write
     calls and creating individual batches that can be written to
-    the file instead, or find a way to create a data structure
-    with a given size (that should be split up into batches once
-    there is no more reasonable amount of memory).
+    the file instead.
 '''
 
 import argparse
-import os
-import sys
 from random import randrange
-
-parser = argparse.ArgumentParser(description='Generate random numbers to file')
-parser.add_argument('-b', '--bitness', type=int, default=16, 
-                    choices=[16, 32, 64], 
-                    help='Bitness value (default: %(default)s)')
-parser.add_argument('-n', '--numerical-value', dest='num', default='64',
-                    type=int, 
-                    help="Numerical value for the output file's size (default: %(default)s)")
-parser.add_argument('-u', '--unit', default='KB', 
-                    help='Size unit for the output file (default: %(default)s)')
-parser.add_argument('-o', '--output', required=True, 
-                    help='Location of the output file')
-args = parser.parse_args()
-
 
 def parse_size(value, unit):
     '''Parse given size and units to determine corresponding number of bytes.
@@ -57,26 +39,38 @@ def parse_size(value, unit):
         return value * (1024**3)
 
 
-def fill_file(file, size):
+def fill_file(file, size, bitness):
     '''Fill file with random numbers to stated size.
 
     Args:
         file: Path to output file, which will be created if missing.
         size: Desired file size in bytes.
+        bitness: The power to use, which determines the value to be written.
     '''
-    nrs = []
-
-    while sys.getsizeof(nrs) <= size:
-        nrs.append(randrange(2**args.bitness))
-
     f = open(file, 'w')
-    f.write('\n'.join(map(str, nrs)))
+
+    while f.tell() < size:
+        f.write(str(randrange(2**bitness)) + '\n')
+
     f.close()
 
 
 def main():
-    val = parse_size(args.num, args.unit)
-    fill_file(args.output, val)
+    parser = argparse.ArgumentParser(description='Generate random numbers to file')
+    parser.add_argument('-b', '--bitness', type=int, default=16, 
+                        choices=[16, 32, 64], 
+                        help='Bitness value (default: %(default)s)')
+    parser.add_argument('-n', '--numerical-value', dest='num', default='64',
+                        type=int, 
+                        help="Numerical value for the output file's size (default: %(default)s)")
+    parser.add_argument('-u', '--unit', default='KB', 
+                        help='Size unit for the output file (default: %(default)s)')
+    parser.add_argument('-o', '--output', required=True, 
+                        help='Location of the output file')
+    args = parser.parse_args()
+    
+    size = parse_size(args.num, args.unit)
+    fill_file(args.output, size, args.bitness)
 
 
 if __name__ == '__main__':
