@@ -47,12 +47,9 @@ def fill_file(file, size, bitness):
         size: Desired file size in bytes.
         bitness: The power to use, which determines the value to be written.
     '''
-    f = open(file, 'w')
-
-    while f.tell() < size:
-        f.write(str(randrange(2**bitness)) + '\n')
-
-    f.close()
+    with open(file, mode='wt', encoding='utf-8') as f:
+        while f.tell() < size:
+            f.write(str(randrange(2**bitness)) + '\n')
 
 
 def main():
