@@ -9,6 +9,9 @@ To-Do:
     - Make 'fill_file' function more efficient by reducing write
     calls and creating individual batches that can be written to
     the file instead.
+        - Logic for determining batch size should take into account
+        size that would be written, not just raw size of batch
+        within Python
 '''
 
 import argparse
