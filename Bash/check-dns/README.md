@@ -50,7 +50,7 @@ Though the blocks are commented here is how to read them:
 
 If you do not want to define multiple sets of endpoints then do without the separate sections and just indent once (with two spaces) all the key-value pairs you want to query from and provide **single** as the third positional parameter for the script.
 
-## Examples
+## Example
 
 Use the provided *dns.yaml* file as a source for input values, target the zone *yourzone*, and use a single set of endpoints to query from:
 
