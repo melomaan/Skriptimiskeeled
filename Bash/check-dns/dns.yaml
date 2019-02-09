@@ -1,0 +1,17 @@
+# What to query
+what:
+  record1: '10.10.10.10'
+  record2: '10.10.10.11'
+  record3: '10.10.10.12'
+
+# From where to query
+from:
+  endpoint1: '10.10.10.1'
+  endpoint2: '10.10.10.2'
+  endpoint3: '10.10.10.3'
+
+# What to check in the query response
+check:
+  'SERVFAIL'
+  'REFUSED'
+  'timed'
