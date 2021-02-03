@@ -19,7 +19,7 @@ if [[ -n "$2" ]]; then
     declare -r ZONE=$2
 
     # Constant. Safe version of the 'ZONE' variable to be used in the final output as
-    # the dots have been replaced with underscores that don't conflict with Dreamon
+    # the dots have been replaced with underscores
     declare -r ZONE_SAFE=${ZONE//\./_}
 else
     echo 'The second positional parameter is undefined. Exiting'
